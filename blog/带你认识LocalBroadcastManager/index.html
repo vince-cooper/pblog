@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-icon-180x180.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/favicon/logo.svg?v=5.1.4" color="#222">
+
+
+  <link rel="manifest" href="/images/favicon/manifest.json">
+
+
+  <meta name="msapplication-config" content="/images/favicon/browserconfig.xml">
+
+
+
+  <meta name="keywords" content="知识点,编程,Android,Broadcast,LocalBroadcastManager,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言我们在Android应尽量避免使用隐式Intent广播传递信息，为什么这么说？原因有下面几点：  意外接收：如果同时维护几个项目，不同项目中难免会存在代码复用的情况，这时若安装了两个注册过同样 Action 广播的APP，一个APP通过Context.sendBroadcast()发送的隐式广播也会被另一个APP接收到，并进行相应的操作，可能会产生意想不到的风险。 敏感信息外泄：发送的隐式广播">
+<meta name="keywords" content="知识点,编程,Android,Broadcast,LocalBroadcastManager">
+<meta property="og:type" content="article">
+<meta property="og:title" content="带你认识LocalBroadcastManager">
+<meta property="og:url" content="https://wangwenhui.site/blog/带你认识LocalBroadcastManager/index.html">
+<meta property="og:site_name" content="王文辉">
+<meta property="og:description" content="前言我们在Android应尽量避免使用隐式Intent广播传递信息，为什么这么说？原因有下面几点：  意外接收：如果同时维护几个项目，不同项目中难免会存在代码复用的情况，这时若安装了两个注册过同样 Action 广播的APP，一个APP通过Context.sendBroadcast()发送的隐式广播也会被另一个APP接收到，并进行相应的操作，可能会产生意想不到的风险。 敏感信息外泄：发送的隐式广播">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-06-04T03:00:07.694Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="带你认识LocalBroadcastManager">
+<meta name="twitter:description" content="前言我们在Android应尽量避免使用隐式Intent广播传递信息，为什么这么说？原因有下面几点：  意外接收：如果同时维护几个项目，不同项目中难免会存在代码复用的情况，这时若安装了两个注册过同样 Action 广播的APP，一个APP通过Context.sendBroadcast()发送的隐式广播也会被另一个APP接收到，并进行相应的操作，可能会产生意想不到的风险。 敏感信息外泄：发送的隐式广播">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://wangwenhui.site/blog/带你认识LocalBroadcastManager/">
+
+
+
+
+
+  <title>带你认识LocalBroadcastManager | 王文辉</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">王文辉</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">行动是治愈恐惧的良药，而犹豫、拖延将不断滋养恐惧。</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-friends">
+          <a href="/friends/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            友链
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://wangwenhui.site/blog/带你认识LocalBroadcastManager/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王文辉">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="王文辉">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">带你认识LocalBroadcastManager</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-14T10:44:43+08:00">
+                2019-03-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/资料/" itemprop="url" rel="index">
+                    <span itemprop="name">资料</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/资料/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>我们在Android应尽量避免使用隐式Intent广播传递信息，为什么这么说？原因有下面几点：</p>
+<ol>
+<li>意外接收：如果同时维护几个项目，不同项目中难免会存在代码复用的情况，这时若安装了两个注册过同样 <em>Action</em> 广播的APP，一个APP通过<code>Context.sendBroadcast()</code>发送的隐式广播也会被另一个APP接收到，并进行相应的操作，可能会产生意想不到的风险。</li>
+<li>敏感信息外泄：发送的隐式广播，可能会被恶意应用注册监听该广播的 <em>receiver</em> 获取到Intent中传递的敏感信息，并进行其他危险的操作。</li>
+<li>Intent拦截：如果发送的广播为使用<code>Context.sendOrderedBroadcast()</code>方法发送的有序广播，优先级较高的恶意 <em>receiver</em> 若直接丢弃该广播，会导致服务无法正常使用，或者广播结果被填充恶意数据。</li>
+</ol>
+<a id="more"></a>
+<p>基于以上的几点，会发现使用隐式Intent广播风险很高，那么怎么解决这个问题呢？首先，我们需要明确广播是否仅限于应用内使用。若需要在应用间传递广播，应尽量避免传递敏感信息；否则，可以使用<code>LocalBroadcastManager.sendBroadcast()</code>实现，这样就避免了意外接收广播，敏感信息外泄和Intent拦截的风险。</p>
+<h1 id="LocalBroadcastManager源码分析"><a href="#LocalBroadcastManager源码分析" class="headerlink" title="LocalBroadcastManager源码分析"></a>LocalBroadcastManager源码分析</h1><p>LocalBroadcastManager的源码并不多，总共也就不到300行，我们来分析下是怎么它的实现。</p>
+<h2 id="单例模式"><a href="#单例模式" class="headerlink" title="单例模式"></a>单例模式</h2><p>首先，从下面这几行代码会发现LocalBroadcastManager使用了延迟加载的单例模式保证类对象的唯一性。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@NonNull</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> LocalBroadcastManager <span class="title">getInstance</span><span class="params">(@NonNull Context context)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">synchronized</span>(mLock) &#123;</span><br><span class="line">        <span class="keyword">if</span> (mInstance == <span class="keyword">null</span>) &#123;</span><br><span class="line">            mInstance = <span class="keyword">new</span> LocalBroadcastManager(context.getApplicationContext());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> mInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="内部类"><a href="#内部类" class="headerlink" title="内部类"></a>内部类</h2><p>再看LocalBroadcastManager的两个静态内部类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">ReceiverRecord</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> IntentFilter filter;</span><br><span class="line">    <span class="keyword">final</span> BroadcastReceiver receiver;</span><br><span class="line">    <span class="comment">// 请自行分析这两个变量的作用</span></span><br><span class="line">    <span class="keyword">boolean</span> broadcasting;</span><br><span class="line">    <span class="keyword">boolean</span> dead;</span><br><span class="line">    <span class="comment">// 省略了构造函数</span></span><br><span class="line">    <span class="comment">// 省略了toString函数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">BroadcastRecord</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Intent intent;</span><br><span class="line">    <span class="keyword">final</span> ArrayList&lt;LocalBroadcastManager.ReceiverRecord&gt; receivers;</span><br><span class="line">    <span class="comment">// 省略了构造函数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>ReceiverRecord</strong>类记录了Intent过滤器和BroadcastReceiver对象，<strong>BroadcastRecord</strong>记录了发送的Intent和一个ReceiverRecord的集合，这个集合是用来做什么的呢？目前猜测存放的应该是需要接收Intent的所有BroadcastReceiver对象，带着这个疑问继续看它的关键成员变量。</p>
+<h2 id="成员变量和关键函数"><a href="#成员变量和关键函数" class="headerlink" title="成员变量和关键函数"></a>成员变量和关键函数</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> HashMap&lt;BroadcastReceiver, ArrayList&lt;LocalBroadcastManager.ReceiverRecord&gt;&gt; mReceivers = <span class="keyword">new</span> HashMap();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> HashMap&lt;String, ArrayList&lt;LocalBroadcastManager.ReceiverRecord&gt;&gt; mActions = <span class="keyword">new</span> HashMap();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ArrayList&lt;LocalBroadcastManager.BroadcastRecord&gt; mPendingBroadcasts = <span class="keyword">new</span> ArrayList();</span><br></pre></td></tr></table></figure>
+<p>想理解这几个变量的作用，需要去看对应的代码。</p>
+<p>下面的代码是<code>LocalBroadcastManager#registerReceiver()</code>函数，<br>从代码注释中的 <em>标识1</em> <em>标识2</em> 可以看出变量名为<strong>mReceivers</strong>的HashMap存放通过注册的BroadcastReceiver（广播接收者）对象和存放了广播接收者信息的ReceiverRecord。<br>从 <em>标识4</em> <em>标识5</em> 不难看出变量名为<strong>mActions</strong>的HashMap存放的是通过<code>LocalBroadcastManager#registerReceiver()</code>方法注册的Action事件和这个事件所对应的所有ReceiverRecord。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 注册BroadcastReceiver（广播接收者）</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerReceiver</span><span class="params">(@NonNull BroadcastReceiver receiver, @NonNull IntentFilter filter)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">synchronized</span>(<span class="keyword">this</span>.mReceivers) &#123;</span><br><span class="line">        LocalBroadcastManager.ReceiverRecord entry = <span class="keyword">new</span> LocalBroadcastManager.ReceiverRecord(filter, receiver);</span><br><span class="line">        ArrayList&lt;LocalBroadcastManager.ReceiverRecord&gt; filters = (ArrayList)<span class="keyword">this</span>.mReceivers.get(receiver);</span><br><span class="line">        <span class="keyword">if</span> (filters == <span class="keyword">null</span>) &#123;</span><br><span class="line">            filters = <span class="keyword">new</span> ArrayList(<span class="number">1</span>);</span><br><span class="line">            <span class="comment">/** 标识1：以BroadcastReceiver为键，ReceiverRecord集合为值存放到mReceivers中 */</span></span><br><span class="line">            <span class="keyword">this</span>.mReceivers.put(receiver, filters);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/** 标识2：将ReceiverRecord存放到ReceiverRecord集合中 */</span></span><br><span class="line">        filters.add(entry);</span><br><span class="line"></span><br><span class="line">        <span class="comment">/** 标识3：遍历需要注册的Action集合 */</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; filter.countActions(); ++i) &#123;</span><br><span class="line">            String action = filter.getAction(i);</span><br><span class="line">            ArrayList&lt;LocalBroadcastManager.ReceiverRecord&gt; entries = (ArrayList)<span class="keyword">this</span>.mActions.get(action);</span><br><span class="line">            <span class="keyword">if</span> (entries == <span class="keyword">null</span>) &#123;</span><br><span class="line">                entries = <span class="keyword">new</span> ArrayList(<span class="number">1</span>);</span><br><span class="line">                <span class="comment">/** 标识4：以Action为键，Action对应的ReceiverRecord集合为值，存放到mActions中 */</span></span><br><span class="line">                <span class="keyword">this</span>.mActions.put(action, entries);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">/** 标识5：将ReceiverRecord存放到Action对应的ReceiverRecord集合中 */</span></span><br><span class="line">            entries.add(entry);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>怎么还有个变量没有解释呢？别着急，想知道另一个变量的作用，需要看另一个函数的代码，那就是<code>sendBroadcast</code>函数。从下面的代码注释中，可以看出<code>sendBroadcast</code>函数的作用就是从前面介绍的<strong>mActions</strong>两个集合中取出需要通知的广播接收者，使用 <em>BroadcastRecord</em> 进行记录，并触发执行<code>executePendingBroadcasts</code>函数罢了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 发送广播函数</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">sendBroadcast</span><span class="params">(@NonNull Intent intent)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 省略代码：标识1 根据Intent中的信息从mActions中</span></span><br><span class="line">    <span class="keyword">if</span> (receivers != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 省略代码</span></span><br><span class="line">        <span class="comment">/** 标识2：将发送的Intent和所有需要接收这个Intent的广播接收者封装为BroadcastRecord，并将其存放到mPendingBroadcasts中*/</span></span><br><span class="line">        <span class="keyword">this</span>.mPendingBroadcasts.add(<span class="keyword">new</span> LocalBroadcastManager.BroadcastRecord(intent, receivers));</span><br><span class="line">        <span class="comment">/** 标识3：发送了一个Handler消息，追踪后发现，最后调用了executePendingBroadcasts函数 */</span></span><br><span class="line">        <span class="keyword">if</span> (!<span class="keyword">this</span>.mHandler.hasMessages(<span class="number">1</span>)) &#123;</span><br><span class="line">            <span class="keyword">this</span>.mHandler.sendEmptyMessage(<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 省略代码</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而<code>executePendingBroadcasts</code>从函数名和前面的逻辑就可以猜到这个函数肯定是通知广播接收器接收Intent，并执行各自操作的最终函数。研究下面这个函数的代码后发现我们的猜测果然没有错，函数就是通过循环调用广播接收器的回调函数来实现 _广播_ 的功能的。什么本地广播管理器嘛，名头这么大，原来本质上就是通过普通的回调实现的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">executePendingBroadcasts</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 注意这里是死循环</span></span><br><span class="line">    <span class="keyword">while</span>(<span class="keyword">true</span>) &#123;</span><br><span class="line">        LocalBroadcastManager.BroadcastRecord[] brs;</span><br><span class="line">        <span class="keyword">synchronized</span>(<span class="keyword">this</span>.mReceivers) &#123;</span><br><span class="line">            <span class="keyword">int</span> N = <span class="keyword">this</span>.mPendingBroadcasts.size();</span><br><span class="line">            <span class="keyword">if</span> (N &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="comment">// 当所有的广播接收器都通知到后，跳出死循环</span></span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 取出所有的BroadcastRecord存放到临时列表中，并清空原列表</span></span><br><span class="line">            brs = <span class="keyword">new</span> LocalBroadcastManager.BroadcastRecord[N];</span><br><span class="line">            <span class="keyword">this</span>.mPendingBroadcasts.toArray(brs);</span><br><span class="line">            <span class="keyword">this</span>.mPendingBroadcasts.clear();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 循环临时列表调用广播接收者的onReceive函数</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; brs.length; ++i) &#123;</span><br><span class="line">            LocalBroadcastManager.BroadcastRecord br = brs[i];</span><br><span class="line">            <span class="keyword">int</span> nbr = br.receivers.size();</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; nbr; ++j) &#123;</span><br><span class="line">                LocalBroadcastManager.ReceiverRecord rec = (LocalBroadcastManager.ReceiverRecord)br.receivers.get(j);</span><br><span class="line">                <span class="keyword">if</span> (!rec.dead) &#123;</span><br><span class="line">                    rec.receiver.onReceive(<span class="keyword">this</span>.mAppContext, br.intent);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>前面通过分析LocalBroadcastManager的源码，我们对LocalBroadcastManager有了更深的理解。我们发现它并没有很复杂的逻辑实现，但却提供了很有用的功能。同时我们只是分析了它的大致逻辑实现原理，并没有对细节做分析，比如：synchronized关键字的使用，为什么通过Handler来触发执行函数？而executePendingBroadcasts函数中为什么要使用死循环来实现？这些细节就要自己去分析理解了，这样才能提高自己的代码水平。我当然已经想通了，哈哈～</p>
+<h1 id="LocalBroadcastManager封装"><a href="#LocalBroadcastManager封装" class="headerlink" title="LocalBroadcastManager封装"></a>LocalBroadcastManager封装</h1><p>为了方便使用LocalBroadcastManager，我对LocalBroadcastManager进行了简单的封装，不仅有Java语言实现，还有Kotlin语言的实现。顺便说一下，Kotlin真好用！</p>
+<h2 id="Java实现"><a href="#Java实现" class="headerlink" title="Java实现"></a>Java实现</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> android.content.BroadcastReceiver;</span><br><span class="line"><span class="keyword">import</span> android.content.Context;</span><br><span class="line"><span class="keyword">import</span> android.content.Intent;</span><br><span class="line"><span class="keyword">import</span> android.content.IntentFilter;</span><br><span class="line"><span class="keyword">import</span> android.support.annotation.NonNull;</span><br><span class="line"><span class="keyword">import</span> android.support.annotation.Nullable;</span><br><span class="line"><span class="keyword">import</span> android.support.v4.content.LocalBroadcastManager;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Desc</span> LocalBroadcastManager工具类</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span> wangwh</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span> 2019-03-14 15:06</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@SuppressWarnings</span>(<span class="string">"WeakerAccess"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LBMUtils</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">LBMUtils</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"Do not need instantiate!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NonNull</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> LocalBroadcastManager <span class="title">getBroadcastManager</span><span class="params">(@NonNull Context ctx)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> LocalBroadcastManager.getInstance(ctx);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Nullable</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> IntentFilter <span class="title">getIntentFilter</span><span class="params">(@NonNull String... actions)</span> </span>&#123;</span><br><span class="line">        IntentFilter filter = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (actions.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            filter = <span class="keyword">new</span> IntentFilter();</span><br><span class="line">            <span class="keyword">for</span> (String action : actions) &#123;</span><br><span class="line">                filter.addAction(action);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> filter;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Desc</span> 通过Action注册广播接收者</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Param</span> [ctx, receiver, actions]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">registerReceiver</span><span class="params">(@NonNull Context ctx, @NonNull BroadcastReceiver receiver, @NonNull String... actions)</span> </span>&#123;</span><br><span class="line">        IntentFilter filter = getIntentFilter(actions);</span><br><span class="line">        <span class="keyword">if</span> (filter != <span class="keyword">null</span>) &#123;</span><br><span class="line">            registerReceiver(ctx, receiver, filter);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Desc</span> 通过IntentFilter注册广播接收者</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Param</span> [ctx, receiver, filter]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">registerReceiver</span><span class="params">(@NonNull Context ctx, @NonNull BroadcastReceiver receiver, @NonNull IntentFilter filter)</span> </span>&#123;</span><br><span class="line">        getBroadcastManager(ctx).registerReceiver(receiver, filter);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Desc</span> 注销广播接收者</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Param</span> [ctx, receiver]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">unRegisterReceiver</span><span class="params">(@NonNull Context ctx, BroadcastReceiver receiver)</span> </span>&#123;</span><br><span class="line">        getBroadcastManager(ctx).unregisterReceiver(receiver);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Desc</span> 通过Action发送广播</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Param</span> [ctx, action]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sendBroadcast</span><span class="params">(@NonNull Context ctx, @NonNull String action)</span> </span>&#123;</span><br><span class="line">        sendBroadcast(ctx, <span class="keyword">new</span> Intent(action));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Desc</span> 通过intent发送广播</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Param</span> [ctx, intent]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sendBroadcast</span><span class="params">(@NonNull Context ctx, @NonNull Intent intent)</span> </span>&#123;</span><br><span class="line">        getBroadcastManager(ctx).sendBroadcast(intent);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Desc</span> 通过Action同步发送广播</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Param</span> [ctx, action]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sendBroadcastSync</span><span class="params">(@NonNull Context ctx, @NonNull String action)</span> </span>&#123;</span><br><span class="line">        sendBroadcastSync(ctx, <span class="keyword">new</span> Intent(action));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Desc</span> 通过Intent同步发送广播</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@Param</span> [ctx, intent]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sendBroadcastSync</span><span class="params">(@NonNull Context ctx, @NonNull Intent intent)</span> </span>&#123;</span><br><span class="line">        getBroadcastManager(ctx).sendBroadcastSync(intent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Kotlin实现"><a href="#Kotlin实现" class="headerlink" title="Kotlin实现"></a>Kotlin实现</h2><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@file:Suppress</span>(<span class="string">"NOTHING_TO_INLINE"</span>, <span class="string">"unused"</span>, <span class="string">"DEPRECATION"</span>, <span class="string">"SpellCheckingInspection"</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.app.Fragment</span><br><span class="line"><span class="keyword">import</span> android.content.BroadcastReceiver</span><br><span class="line"><span class="keyword">import</span> android.content.Context</span><br><span class="line"><span class="keyword">import</span> android.content.Intent</span><br><span class="line"><span class="keyword">import</span> android.content.IntentFilter</span><br><span class="line"><span class="keyword">import</span> android.support.v4.app.Fragment <span class="keyword">as</span> FragmentV4</span><br><span class="line"><span class="keyword">import</span> android.support.v4.content.LocalBroadcastManager</span><br><span class="line"><span class="keyword">import</span> android.view.View</span><br><span class="line"><span class="keyword">import</span> org.jetbrains.anko.AnkoContext</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Desc</span> LocalBroadcastManager扩展 Kotlin API</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span> wangwh</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span> 2019-03-06 15:46</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">getIntentFilter</span><span class="params">(<span class="keyword">vararg</span> actions: <span class="type">String</span>)</span></span>: IntentFilter &#123;</span><br><span class="line">    <span class="keyword">val</span> filter = IntentFilter()</span><br><span class="line">    <span class="keyword">for</span> (action <span class="keyword">in</span> actions) &#123;</span><br><span class="line">        filter.addAction(action)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> filter</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Context 的扩展实现</span></span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> Context.<span class="title">unRegisterReceiver</span><span class="params">(receiver: <span class="type">BroadcastReceiver</span>)</span></span> = getBroadcastManager().unregisterReceiver(receiver)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> Context.<span class="title">getBroadcastManager</span><span class="params">()</span></span>: LocalBroadcastManager = LocalBroadcastManager.getInstance(<span class="keyword">this</span>)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> Context.<span class="title">sendBroadcast</span><span class="params">(action: <span class="type">String</span>)</span></span> = sendBroadcast(Intent(action))</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> Context.<span class="title">sendBroadcastSync</span><span class="params">(intent: <span class="type">Intent</span>)</span></span> = getBroadcastManager().sendBroadcastSync(intent)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 同上实现，对 AnkoContext 进行扩展</span></span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> AnkoContext<span class="type">&lt;*&gt;</span>.<span class="title">registerReceiver</span><span class="params">(receiver: <span class="type">BroadcastReceiver</span>, filter: <span class="type">IntentFilter</span>)</span></span> =</span><br><span class="line">    ctx.registerReceiver(receiver, filter)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> AnkoContext<span class="type">&lt;*&gt;</span>.<span class="title">unRegisterReceiver</span><span class="params">(receiver: <span class="type">BroadcastReceiver</span>)</span></span> = ctx.unRegisterReceiver(receiver)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> AnkoContext<span class="type">&lt;*&gt;</span>.<span class="title">sendBroadcast</span><span class="params">(action: <span class="type">String</span>)</span></span> = ctx.sendBroadcast(action)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> AnkoContext<span class="type">&lt;*&gt;</span>.<span class="title">sendBroadcast</span><span class="params">(intent: <span class="type">Intent</span>)</span></span> = ctx.sendBroadcast(intent)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> AnkoContext<span class="type">&lt;*&gt;</span>.<span class="title">sendBroadcastSync</span><span class="params">(action: <span class="type">String</span>)</span></span> = ctx.sendBroadcast(action)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> AnkoContext<span class="type">&lt;*&gt;</span>.<span class="title">sendBroadcastSync</span><span class="params">(intent: <span class="type">Intent</span>)</span></span> = ctx.sendBroadcastSync(intent)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 同上实现，对 View 进行扩展</span></span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> View.<span class="title">registerReceiver</span><span class="params">(receiver: <span class="type">BroadcastReceiver</span>, filter: <span class="type">IntentFilter</span>)</span></span> =</span><br><span class="line">    context.registerReceiver(receiver, filter)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> View.<span class="title">unRegisterReceiver</span><span class="params">(receiver: <span class="type">BroadcastReceiver</span>)</span></span> = context.unRegisterReceiver(receiver)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> View.<span class="title">sendBroadcast</span><span class="params">(action: <span class="type">String</span>)</span></span> = context.sendBroadcast(action)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> View.<span class="title">sendBroadcast</span><span class="params">(intent: <span class="type">Intent</span>)</span></span> = context.sendBroadcast(intent)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> View.<span class="title">sendBroadcastSync</span><span class="params">(action: <span class="type">String</span>)</span></span> = context.sendBroadcast(action)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> View.<span class="title">sendBroadcastSync</span><span class="params">(intent: <span class="type">Intent</span>)</span></span> = context.sendBroadcastSync(intent)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 同上实现，对 Fragment 进行扩展</span></span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> Fragment.<span class="title">registerReceiver</span><span class="params">(receiver: <span class="type">BroadcastReceiver</span>, filter: <span class="type">IntentFilter</span>)</span></span> =</span><br><span class="line">    activity.registerReceiver(receiver, filter)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> Fragment.<span class="title">unRegisterReceiver</span><span class="params">(receiver: <span class="type">BroadcastReceiver</span>)</span></span> = activity.unRegisterReceiver(receiver)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> Fragment.<span class="title">sendBroadcast</span><span class="params">(action: <span class="type">String</span>)</span></span> = activity.sendBroadcast(action)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> Fragment.<span class="title">sendBroadcast</span><span class="params">(intent: <span class="type">Intent</span>)</span></span> = activity.sendBroadcast(intent)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> Fragment.<span class="title">sendBroadcastSync</span><span class="params">(action: <span class="type">String</span>)</span></span> = activity.sendBroadcast(action)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> Fragment.<span class="title">sendBroadcastSync</span><span class="params">(intent: <span class="type">Intent</span>)</span></span> = activity.sendBroadcastSync(intent)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 同上实现，对 FragmentV4 进行扩展</span></span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> FragmentV4.<span class="title">registerReceiver</span><span class="params">(receiver: <span class="type">BroadcastReceiver</span>, filter: <span class="type">IntentFilter</span>)</span></span> =</span><br><span class="line">    requireActivity().registerReceiver(receiver, filter)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> FragmentV4.<span class="title">unRegisterReceiver</span><span class="params">(receiver: <span class="type">BroadcastReceiver</span>)</span></span> = requireActivity().unRegisterReceiver(receiver)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> FragmentV4.<span class="title">sendBroadcast</span><span class="params">(action: <span class="type">String</span>)</span></span> = requireActivity().sendBroadcast(action)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> FragmentV4.<span class="title">sendBroadcast</span><span class="params">(intent: <span class="type">Intent</span>)</span></span> = requireActivity().sendBroadcast(intent)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> FragmentV4.<span class="title">sendBroadcastSync</span><span class="params">(action: <span class="type">String</span>)</span></span> = requireActivity().sendBroadcast(action)</span><br><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> FragmentV4.<span class="title">sendBroadcastSync</span><span class="params">(intent: <span class="type">Intent</span>)</span></span> = requireActivity().sendBroadcastSync(intent)</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/知识点/" rel="tag"># 知识点</a>
+          
+            <a href="/tags/编程/" rel="tag"># 编程</a>
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+            <a href="/tags/Broadcast/" rel="tag"># Broadcast</a>
+          
+            <a href="/tags/LocalBroadcastManager/" rel="tag"># LocalBroadcastManager</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/RxJava详解/" rel="next" title="RxJava详解">
+                <i class="fa fa-chevron-left"></i> RxJava详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/LeetCode-算法题-解答过程记录/" rel="prev" title="LeetCode算法题：解答笔记">
+                LeetCode算法题：解答笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="王文辉">
+            
+              <p class="site-author-name" itemprop="name">王文辉</p>
+              <p class="site-description motion-element" itemprop="description">精中教育，Android高级工程师。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:wwh.person@gmail.com" target="_blank" title="邮箱">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>邮箱</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/a3f894465e71" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/WorkWwh" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/WwhOS" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LocalBroadcastManager源码分析"><span class="nav-number">2.</span> <span class="nav-text">LocalBroadcastManager源码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#单例模式"><span class="nav-number">2.1.</span> <span class="nav-text">单例模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内部类"><span class="nav-number">2.2.</span> <span class="nav-text">内部类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#成员变量和关键函数"><span class="nav-number">2.3.</span> <span class="nav-text">成员变量和关键函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">2.4.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LocalBroadcastManager封装"><span class="nav-number">3.</span> <span class="nav-text">LocalBroadcastManager封装</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java实现"><span class="nav-number">3.1.</span> <span class="nav-text">Java实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kotlin实现"><span class="nav-number">3.2.</span> <span class="nav-text">Kotlin实现</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王文辉</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('-1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "default";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "default";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "middleRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

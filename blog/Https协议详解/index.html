@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-icon-180x180.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/favicon/logo.svg?v=5.1.4" color="#222">
+
+
+  <link rel="manifest" href="/images/favicon/manifest.json">
+
+
+  <meta name="msapplication-config" content="/images/favicon/browserconfig.xml">
+
+
+
+  <meta name="keywords" content="Https,知识点,求职,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文内容主要讲解Https协议，其他网络知识点作为理解Https协议的辅助。 首先，需要简单知道网络协议的四个层次，即：网络接口层，网络层，传输层，应用层。 Http协议Http协议是一种超文本传输协议，是客户端浏览器与服务器之前的 应用层 通信协议。Http协议不提供数据加密，以明文的方式发送内容，容易被攻击截取信息，不适合用于传输一些敏感信息。">
+<meta name="keywords" content="Https,知识点,求职">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Https协议详解">
+<meta property="og:url" content="https://wangwenhui.site/blog/Https协议详解/index.html">
+<meta property="og:site_name" content="王文辉">
+<meta property="og:description" content="本文内容主要讲解Https协议，其他网络知识点作为理解Https协议的辅助。 首先，需要简单知道网络协议的四个层次，即：网络接口层，网络层，传输层，应用层。 Http协议Http协议是一种超文本传输协议，是客户端浏览器与服务器之前的 应用层 通信协议。Http协议不提供数据加密，以明文的方式发送内容，容易被攻击截取信息，不适合用于传输一些敏感信息。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/9476273-b6dccd366c902f68.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2021-06-04T03:00:07.691Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Https协议详解">
+<meta name="twitter:description" content="本文内容主要讲解Https协议，其他网络知识点作为理解Https协议的辅助。 首先，需要简单知道网络协议的四个层次，即：网络接口层，网络层，传输层，应用层。 Http协议Http协议是一种超文本传输协议，是客户端浏览器与服务器之前的 应用层 通信协议。Http协议不提供数据加密，以明文的方式发送内容，容易被攻击截取信息，不适合用于传输一些敏感信息。">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/9476273-b6dccd366c902f68.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://wangwenhui.site/blog/Https协议详解/">
+
+
+
+
+
+  <title>Https协议详解 | 王文辉</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">王文辉</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">行动是治愈恐惧的良药，而犹豫、拖延将不断滋养恐惧。</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-friends">
+          <a href="/friends/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            友链
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://wangwenhui.site/blog/Https协议详解/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王文辉">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="王文辉">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Https协议详解</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-12T11:25:15+08:00">
+                2019-03-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/资料/" itemprop="url" rel="index">
+                    <span itemprop="name">资料</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文内容主要讲解Https协议，其他网络知识点作为理解Https协议的辅助。</p>
+<p>首先，需要简单知道网络协议的四个层次，即：网络接口层，网络层，传输层，应用层。</p>
+<h1 id="Http协议"><a href="#Http协议" class="headerlink" title="Http协议"></a>Http协议</h1><p><strong>Http协议</strong>是一种超文本传输协议，是客户端浏览器与服务器之前的 <em>应用层</em> 通信协议。<br>Http协议不提供数据加密，以明文的方式发送内容，容易被攻击截取信息，不适合用于传输一些敏感信息。</p>
+<a id="more"></a>
+<h1 id="Https协议"><a href="#Https协议" class="headerlink" title="Https协议"></a>Https协议</h1><p><strong>Https协议</strong>是以安全为目标的Http通道，在Http的基础上加入SSL层，简单来说就是Http协议的安全版。<br>Https协议的主要作用可以分为两种：一种是建立一个信息安全通道，来保证数据传输的安全；另一种就是确认网站的真实性。</p>
+<p>在进行详细解释Https之前，我们需要先简单了解一些Https协议使用到的关键技术。</p>
+<h2 id="关键技术"><a href="#关键技术" class="headerlink" title="关键技术"></a>关键技术</h2><h3 id="对称加密"><a href="#对称加密" class="headerlink" title="对称加密"></a>对称加密</h3><p><strong>对称加密</strong>使用加密和解密使用相同密钥的加密算法进行加密，也叫私钥加密。常见的对称加密有：<em>DES</em>, <em>AES</em> 等。</p>
+<h3 id="非对称加密"><a href="#非对称加密" class="headerlink" title="非对称加密"></a>非对称加密</h3><p><strong>非对称加密</strong>与对称加密不同，使用非对称加密算法进行加密，需要两个密钥，即公钥和私钥。公钥和私钥是成对出现的，在加密和解密的过程中使用不同的密钥，所以也称为公钥加密。</p>
+<h3 id="数字摘要"><a href="#数字摘要" class="headerlink" title="数字摘要"></a>数字摘要</h3><p><strong>数字摘要</strong>采用单项Hash函数将需要加密的明文 _摘要_ 成一串固定长度（128位）的密文，这个密文又称为数字指纹。不同的明文摘生成的数字指纹总是不同的，而同样的明文摘要生成的数字指纹必定一致。<br><em>数字摘要</em> 是Https能确保数据完整性和防篡改的根本原因。</p>
+<h3 id="数字签名"><a href="#数字签名" class="headerlink" title="数字签名"></a>数字签名</h3><p><strong>数字签名</strong>是对 <em>非对称加密</em> 和 <em>数字摘要</em> 两项技术的应用。<br>它将 <em>摘要信息</em> 用发送者的私钥加密，与原文一起传送给接收者。<br>接收者只有使用发送者的公钥才能解密出被加密的 <em>摘要信息</em>；接着对接收到的原文用 <em>数字摘要</em> 生成 <em>摘要信息</em>；然后将两个 <em>摘要信息</em> 进行对比。若相同，说明收到的原文是完整的，在传输过程中没有被修改。因此，数字签名能够验证数据的完整性。</p>
+<h3 id="SSL"><a href="#SSL" class="headerlink" title="SSL"></a>SSL</h3><p><strong>SSL</strong>是安全套接层，用以保障数据传输的安全，利用数据加密技术确保数据在传输过程中不会被截取。</p>
+<p>SSL又可分为两层：</p>
+<ul>
+<li><strong>SSL记录协议</strong>建立在可靠的传输协议（如TCP）之上，为高层协议提供数据封装，压缩，加密等基本功能的支持。</li>
+<li><strong>SSL握手协议</strong>建立在SSL记录协议之上，用于在实际的数据开始传输前，通讯双方进行身份认证，协商加密算法，交换加密密钥等。</li>
+</ul>
+<h2 id="SSL-TLS握手流程"><a href="#SSL-TLS握手流程" class="headerlink" title="SSL/TLS握手流程"></a>SSL/TLS握手流程</h2><p>SSL/TLS握手过程流程图：<br><img src="https://upload-images.jianshu.io/upload_images/9476273-b6dccd366c902f68.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="SSL握手流程图"></p>
+<ol>
+<li><p>客户端发起请求：在SSL/TLS协议传输过程中，客户端和服务端必须使用同一套加解密算法才能保证数据正常的加解密。由于客户端对一些加解密算法的支持程度不一样，所以客户端需要告知服务端自己支持的加密套件的列表传给服务端。此外，客户端还要生成一个随机数（第一个随机数），用于传送给服务端，在后面的步骤中与服务端生成的随机数结合起来产生 <em>对话密钥</em>。</p>
+<p> 那么客户端需要提供的信息：</p>
+<ul>
+<li>支持的协议版本</li>
+<li>支持的加密算法</li>
+<li>支持的压缩方法</li>
+<li>随机数</li>
+</ul>
+</li>
+<li><p>服务端响应：服务端确定加密协议的版本和加密算法后，也生成一个随机数（第二个随机数），并将自己的证书一并发送给客户端。</p>
+<p> 服务端需要提供的信息：</p>
+<ul>
+<li>确定支持的版本</li>
+<li>确定加密的算法</li>
+<li>随机数</li>
+<li>服务器证书，包含公钥<blockquote>
+<p>注意：一些场景下，服务器需要确认客户端的身份，会要求客户端提供 <em>客户端证书</em></p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p>客户端验证证书：客户端先对服务器下发的证书进行验证，验证通过后客户端再生成一个随机数（第三个随机数，也是最关键的随机数），并使用证书中的公钥对随机数进行加密，再加入一个 <em>ChangeCipherSpec</em> 即编码改变的消息和前面所有消息的Hash值，最后将所有的这些信息发送到服务器，确保在正式通信前无误。</p>
+<p> 此时，客户端得到全部的三个随机数，客户端会用协商的加密方法，生成本次会话所用的同一把 <em>会话密钥</em>。</p>
+<p> <strong>ChangeCipherSpec</strong>是一个独立的协议，在数据包中就是一个字节的数据，用于告知服务端：客户端已经切换到了协商好的加密套件，准备好加密数据并进行传输了。</p>
+<p> 客户端提供的信息：</p>
+<ul>
+<li>使用服务器证书中的公钥加密后的随机数（第三个）</li>
+<li><em>ChangeCipherSpec</em> 编码改变的通知</li>
+<li>握手结束的通知<blockquote>
+<p>注意：如果服务端需要客户端证书，客户端会在这一步发送证书信息。</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p>服务端生成秘钥：使用私钥对随机数（第三个）的加密数据进行解密，此时服务端得到全部的三个随机数，同样使用协商的加密方法，生成和客户端使用的同一把 <em>会话密钥</em>。准备好后，服务端也会给客户端一个 <em>ChangeCipherSpec</em> 即编码改变的消息，告知客户端已经切换到了协商好的加密套件，准备好加密数据并进行传输了。</p>
+<p> 之后，服务端会使用 <em>会话密钥</em> 加密一段finish消息发送给客户端，以验证通过握手建立的加密通道是否成功。</p>
+</li>
+<li><p>客户端发送数据：确定 <em>会话密钥</em> 后，客户端与服务器之间就会使用对称加密加密数据后传输了。整个握手的过程也就基本完成了。</p>
+</li>
+</ol>
+<blockquote>
+<p>注意：SSL协议在握手阶段使用的是非对称加密，在传输阶段使用的是对称加密。<br>因为非对称加密的速度缓慢，比较耗费资源，所以在使用非对称加密建立连接后，客户端和服务器之间传输数据使用的是协商好的对称加密算法和对称加密密钥（即会话密钥）。这个数据传输过程本身是安全可靠的，也就是说对称加密密钥是不可能被窃取盗用的。<br>如果有人窃听通讯，他可以知道双方选择的加密方法，以及三个随机数中的两个，也就是说整个通话的安全，只取决于第三个随机数（客户端生成并加密）能不能被破解。</p>
+</blockquote>
+<h2 id="Session的恢复"><a href="#Session的恢复" class="headerlink" title="Session的恢复"></a>Session的恢复</h2><p>两种恢复Session对话的方式：<strong>Session ID</strong>，<strong>Session ticket</strong>。</p>
+<h3 id="Session-ID"><a href="#Session-ID" class="headerlink" title="Session ID"></a>Session ID</h3><p>客户端和服务器的每次对话都有一个编号。若对话中断，重连时只要客户端给出编号，并且服务器有该编号的记录，双方就可以使用已有的 <em>对话密钥</em> 重新建立连接，而不用重新走握手流程重新连接。</p>
+<blockquote>
+<p>Session ID是目前所有浏览器都支持的方法，缺点是Session ID往往只保留在一台服务器上，如果客户端重连时请求发到另一台服务器上，就无法恢复对话。</p>
+</blockquote>
+<h3 id="Session-ticket"><a href="#Session-ticket" class="headerlink" title="Session ticket"></a>Session ticket</h3><p>客户端发送一个服务器在上次对话中发送过来的Session ticket，其中包括对话的主要信息，如：对话密钥和加密方法等。这个Session ticket是加密的，只有服务器才能解密，服务器在解密Session ticket后就不用重新生成对话密钥了。</p>
+<blockquote>
+<p>目前只有部分浏览器支持，如：Chrome和Firefox</p>
+</blockquote>
+<hr>
+<p>参考资料：</p>
+<ul>
+<li><a href="https://www.jianshu.com/p/30b8b40a671c" target="_blank" rel="noopener">风化成石：Https协议详解</a> 推荐一看，文章主要精华都吸取自该博客。</li>
+<li><a href="https://zhuanlan.zhihu.com/p/43397042" target="_blank" rel="noopener">施小喵：HTTPS原理解析</a></li>
+<li><a href="https://www.jianshu.com/p/83df3d3127d7" target="_blank" rel="noopener">K__M：https协议原理</a></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Https/" rel="tag"># Https</a>
+          
+            <a href="/tags/知识点/" rel="tag"># 知识点</a>
+          
+            <a href="/tags/求职/" rel="tag"># 求职</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/Kotlin：作用域函数/" rel="next" title="Kotlin：作用域函数">
+                <i class="fa fa-chevron-left"></i> Kotlin：作用域函数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/RxJava详解/" rel="prev" title="RxJava详解">
+                RxJava详解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="王文辉">
+            
+              <p class="site-author-name" itemprop="name">王文辉</p>
+              <p class="site-description motion-element" itemprop="description">精中教育，Android高级工程师。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:wwh.person@gmail.com" target="_blank" title="邮箱">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>邮箱</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/a3f894465e71" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/WorkWwh" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/WwhOS" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Http协议"><span class="nav-number">1.</span> <span class="nav-text">Http协议</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Https协议"><span class="nav-number">2.</span> <span class="nav-text">Https协议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#关键技术"><span class="nav-number">2.1.</span> <span class="nav-text">关键技术</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#对称加密"><span class="nav-number">2.1.1.</span> <span class="nav-text">对称加密</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#非对称加密"><span class="nav-number">2.1.2.</span> <span class="nav-text">非对称加密</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数字摘要"><span class="nav-number">2.1.3.</span> <span class="nav-text">数字摘要</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数字签名"><span class="nav-number">2.1.4.</span> <span class="nav-text">数字签名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SSL"><span class="nav-number">2.1.5.</span> <span class="nav-text">SSL</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SSL-TLS握手流程"><span class="nav-number">2.2.</span> <span class="nav-text">SSL/TLS握手流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Session的恢复"><span class="nav-number">2.3.</span> <span class="nav-text">Session的恢复</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Session-ID"><span class="nav-number">2.3.1.</span> <span class="nav-text">Session ID</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Session-ticket"><span class="nav-number">2.3.2.</span> <span class="nav-text">Session ticket</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王文辉</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('-1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "default";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "default";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "middleRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

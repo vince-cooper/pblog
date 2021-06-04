@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-icon-180x180.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/favicon/logo.svg?v=5.1.4" color="#222">
+
+
+  <link rel="manifest" href="/images/favicon/manifest.json">
+
+
+  <meta name="msapplication-config" content="/images/favicon/browserconfig.xml">
+
+
+
+  <meta name="keywords" content=",,,,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="本文用于记录Android面试时经常遇到的问题，答案由我本人研究总结后填充，方便回忆知识点，日后面试前准备，学习交流等目的。  答案会在日后空闲时间慢慢填充  题目目录初始取材：莫少侠：18年底Android面经分享">
+<meta name="keywords" content="Android,Java,知识点,求职">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Android知识点-常见面试题">
+<meta property="og:url" content="https://wangwenhui.site/processing/Android知识点-常见面试题.html">
+<meta property="og:site_name" content="王文辉">
+<meta property="og:description" content="本文用于记录Android面试时经常遇到的问题，答案由我本人研究总结后填充，方便回忆知识点，日后面试前准备，学习交流等目的。  答案会在日后空闲时间慢慢填充  题目目录初始取材：莫少侠：18年底Android面经分享">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2021-06-04T04:32:47.048Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Android知识点-常见面试题">
+<meta name="twitter:description" content="本文用于记录Android面试时经常遇到的问题，答案由我本人研究总结后填充，方便回忆知识点，日后面试前准备，学习交流等目的。  答案会在日后空闲时间慢慢填充  题目目录初始取材：莫少侠：18年底Android面经分享">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://wangwenhui.site/processing/Android知识点-常见面试题.html">
+
+
+
+
+
+  <title>Android知识点-常见面试题 | 王文辉</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">王文辉</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">行动是治愈恐惧的良药，而犹豫、拖延将不断滋养恐惧。</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-friends">
+          <a href="/friends/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            友链
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+    
+    
+    <div class="post-block page">
+      <header class="post-header">
+
+	<h1 class="post-title" itemprop="name headline">Android知识点-常见面试题</h1>
+
+
+
+</header>
+
+      
+      
+      
+      <div class="post-body">
+        
+        
+          <p>本文用于记录Android面试时经常遇到的问题，答案由我本人研究总结后填充，方便回忆知识点，日后面试前准备，学习交流等目的。</p>
+<blockquote>
+<p>答案会在日后空闲时间慢慢填充</p>
+</blockquote>
+<p>题目目录初始取材：<a href="https://www.jianshu.com/p/441cf7b3d7df" target="_blank" rel="noopener">莫少侠：18年底Android面经分享</a></p>
+<a id="more"></a>
+<h2 id="网络基础"><a href="#网络基础" class="headerlink" title="网络基础"></a>网络基础</h2><h3 id="Https原理"><a href="#Https原理" class="headerlink" title="Https原理"></a>Https原理</h3><p>见：<a href="https://wangwenhui.site/blog/Https协议详解/">Https协议详解</a></p>
+<h3 id="Http与Https的区别？"><a href="#Http与Https的区别？" class="headerlink" title="Http与Https的区别？"></a>Http与Https的区别？</h3><h3 id="TCP和UDP的区别？"><a href="#TCP和UDP的区别？" class="headerlink" title="TCP和UDP的区别？"></a>TCP和UDP的区别？</h3><h3 id="Http的报文结构？cookie的用处？"><a href="#Http的报文结构？cookie的用处？" class="headerlink" title="Http的报文结构？cookie的用处？"></a>Http的报文结构？cookie的用处？</h3><h3 id="Http有哪些响应码，都代表什么意思？"><a href="#Http有哪些响应码，都代表什么意思？" class="headerlink" title="Http有哪些响应码，都代表什么意思？"></a>Http有哪些响应码，都代表什么意思？</h3><hr>
+<h2 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h2><h3 id="Sleep和wait的区别？"><a href="#Sleep和wait的区别？" class="headerlink" title="Sleep和wait的区别？"></a>Sleep和wait的区别？</h3><h3 id="Java有哪些线程池，区别是什么？"><a href="#Java有哪些线程池，区别是什么？" class="headerlink" title="Java有哪些线程池，区别是什么？"></a>Java有哪些线程池，区别是什么？</h3><h3 id="线程池的工作流程和实现原理"><a href="#线程池的工作流程和实现原理" class="headerlink" title="线程池的工作流程和实现原理"></a>线程池的工作流程和实现原理</h3><h3 id="Cache线程池的缺点？"><a href="#Cache线程池的缺点？" class="headerlink" title="Cache线程池的缺点？"></a>Cache线程池的缺点？</h3><h3 id="多线程的通信方式"><a href="#多线程的通信方式" class="headerlink" title="多线程的通信方式"></a>多线程的通信方式</h3><h3 id="synchronize关键字的用法，其他的同步方式？"><a href="#synchronize关键字的用法，其他的同步方式？" class="headerlink" title="synchronize关键字的用法，其他的同步方式？"></a>synchronize关键字的用法，其他的同步方式？</h3><h3 id="Thread直接调用run方法会怎么样？Start方法作用是什么？"><a href="#Thread直接调用run方法会怎么样？Start方法作用是什么？" class="headerlink" title="Thread直接调用run方法会怎么样？Start方法作用是什么？"></a>Thread直接调用run方法会怎么样？Start方法作用是什么？</h3><h3 id="volatile关键字的作用是什么？"><a href="#volatile关键字的作用是什么？" class="headerlink" title="volatile关键字的作用是什么？"></a>volatile关键字的作用是什么？</h3><h3 id="怎么安全停止一个线程任务？原理是什么？线程池有类似的机制吗？"><a href="#怎么安全停止一个线程任务？原理是什么？线程池有类似的机制吗？" class="headerlink" title="怎么安全停止一个线程任务？原理是什么？线程池有类似的机制吗？"></a>怎么安全停止一个线程任务？原理是什么？线程池有类似的机制吗？</h3><hr>
+<h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><h3 id="HashMap和HashTable的区别？"><a href="#HashMap和HashTable的区别？" class="headerlink" title="HashMap和HashTable的区别？"></a>HashMap和HashTable的区别？</h3><h3 id="HashMap和ConcurrentHashMap的区别？"><a href="#HashMap和ConcurrentHashMap的区别？" class="headerlink" title="HashMap和ConcurrentHashMap的区别？"></a>HashMap和ConcurrentHashMap的区别？</h3><h3 id="HashMap和LinkedHashMap的区别？"><a href="#HashMap和LinkedHashMap的区别？" class="headerlink" title="HashMap和LinkedHashMap的区别？"></a>HashMap和LinkedHashMap的区别？</h3><h3 id="HashMap的内部实现原理"><a href="#HashMap的内部实现原理" class="headerlink" title="HashMap的内部实现原理"></a>HashMap的内部实现原理</h3><h3 id="LRUCache的原理"><a href="#LRUCache的原理" class="headerlink" title="LRUCache的原理"></a>LRUCache的原理</h3><h3 id="ArrayList和LinkedList的区别？为什么ArrayList不是线程安全的？"><a href="#ArrayList和LinkedList的区别？为什么ArrayList不是线程安全的？" class="headerlink" title="ArrayList和LinkedList的区别？为什么ArrayList不是线程安全的？"></a>ArrayList和LinkedList的区别？为什么ArrayList不是线程安全的？</h3><h3 id="数据库的索引用是什么数据结构？"><a href="#数据库的索引用是什么数据结构？" class="headerlink" title="数据库的索引用是什么数据结构？"></a>数据库的索引用是什么数据结构？</h3><hr>
+<h2 id="虚拟机"><a href="#虚拟机" class="headerlink" title="虚拟机"></a>虚拟机</h2><h3 id="Java垃圾回收机制？有哪些对象可以作为GC-roots？"><a href="#Java垃圾回收机制？有哪些对象可以作为GC-roots？" class="headerlink" title="Java垃圾回收机制？有哪些对象可以作为GC roots？"></a>Java垃圾回收机制？有哪些对象可以作为GC roots？</h3><h3 id="跟Art，Dalvik对比"><a href="#跟Art，Dalvik对比" class="headerlink" title="跟Art，Dalvik对比"></a>跟Art，Dalvik对比</h3><h3 id="Java内存模型"><a href="#Java内存模型" class="headerlink" title="Java内存模型"></a>Java内存模型</h3><h3 id="类加载机制？双亲委托模型？"><a href="#类加载机制？双亲委托模型？" class="headerlink" title="类加载机制？双亲委托模型？"></a>类加载机制？双亲委托模型？</h3><hr>
+<h2 id="Android题"><a href="#Android题" class="headerlink" title="Android题"></a>Android题</h2><h3 id="项目中遇到的难题或者坑"><a href="#项目中遇到的难题或者坑" class="headerlink" title="项目中遇到的难题或者坑"></a>项目中遇到的难题或者坑</h3><h3 id="做过那些性能优化？怎么评测和具体实现的"><a href="#做过那些性能优化？怎么评测和具体实现的" class="headerlink" title="做过那些性能优化？怎么评测和具体实现的"></a>做过那些性能优化？怎么评测和具体实现的</h3><h3 id="Activity的冷启动流程？AMS的作用？"><a href="#Activity的冷启动流程？AMS的作用？" class="headerlink" title="Activity的冷启动流程？AMS的作用？"></a>Activity的冷启动流程？AMS的作用？</h3><h3 id="怎么分析内存泄露？"><a href="#怎么分析内存泄露？" class="headerlink" title="怎么分析内存泄露？"></a>怎么分析内存泄露？</h3><h3 id="View的事件分发机制？滑动冲突如何解决？"><a href="#View的事件分发机制？滑动冲突如何解决？" class="headerlink" title="View的事件分发机制？滑动冲突如何解决？"></a>View的事件分发机制？滑动冲突如何解决？</h3><h3 id="自定义View的原理和流程"><a href="#自定义View的原理和流程" class="headerlink" title="自定义View的原理和流程"></a>自定义View的原理和流程</h3><h3 id="Handler原理"><a href="#Handler原理" class="headerlink" title="Handler原理"></a>Handler原理</h3><h3 id="Android有哪些多线程通信方式？Binder机制实现？"><a href="#Android有哪些多线程通信方式？Binder机制实现？" class="headerlink" title="Android有哪些多线程通信方式？Binder机制实现？"></a>Android有哪些多线程通信方式？Binder机制实现？</h3><h3 id="Android的生命周期，启动模式"><a href="#Android的生命周期，启动模式" class="headerlink" title="Android的生命周期，启动模式"></a>Android的生命周期，启动模式</h3><h3 id="项目中使用的开源库？实现原理？"><a href="#项目中使用的开源库？实现原理？" class="headerlink" title="项目中使用的开源库？实现原理？"></a>项目中使用的开源库？实现原理？</h3><p>OkHttp，RxJava，Retrofit重点</p>
+<h3 id="Android的打包流程？apk中有哪些东西？签名算法的原理？"><a href="#Android的打包流程？apk中有哪些东西？签名算法的原理？" class="headerlink" title="Android的打包流程？apk中有哪些东西？签名算法的原理？"></a>Android的打包流程？apk中有哪些东西？签名算法的原理？</h3><h3 id="了解哪些插件话技术"><a href="#了解哪些插件话技术" class="headerlink" title="了解哪些插件话技术"></a>了解哪些插件话技术</h3><h3 id="LinearLayout的布局流程"><a href="#LinearLayout的布局流程" class="headerlink" title="LinearLayout的布局流程"></a>LinearLayout的布局流程</h3><h3 id="MVP，MVVM"><a href="#MVP，MVVM" class="headerlink" title="MVP，MVVM"></a>MVP，MVVM</h3><h3 id="Android怎么做保活？"><a href="#Android怎么做保活？" class="headerlink" title="Android怎么做保活？"></a>Android怎么做保活？</h3><hr>
+<h2 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h2><ul>
+<li>排序相关的（快排，分析不同排序区别，时间复杂度等）</li>
+<li>字符串、数组相关的（滑动窗口、双指针）</li>
+<li>链表（反转链表）</li>
+<li>递归、斐波那契数列（爬楼梯）</li>
+<li>动态规划</li>
+</ul>
+<hr>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><h3 id="用过那些设计模式？"><a href="#用过那些设计模式？" class="headerlink" title="用过那些设计模式？"></a>用过那些设计模式？</h3><h3 id="DCL单例模式为什么要两次判空？"><a href="#DCL单例模式为什么要两次判空？" class="headerlink" title="DCL单例模式为什么要两次判空？"></a>DCL单例模式为什么要两次判空？</h3><h3 id="Android源码中或用过的开源库用到了什么设计模式？"><a href="#Android源码中或用过的开源库用到了什么设计模式？" class="headerlink" title="Android源码中或用过的开源库用到了什么设计模式？"></a>Android源码中或用过的开源库用到了什么设计模式？</h3><h3 id="final关键字的作用？"><a href="#final关键字的作用？" class="headerlink" title="final关键字的作用？"></a>final关键字的作用？</h3><h3 id="静态内部类和内部类的区别？"><a href="#静态内部类和内部类的区别？" class="headerlink" title="静态内部类和内部类的区别？"></a>静态内部类和内部类的区别？</h3><h3 id="值传递类问题"><a href="#值传递类问题" class="headerlink" title="值传递类问题"></a>值传递类问题</h3><h3 id="Kotlin为什么能和Java混编？"><a href="#Kotlin为什么能和Java混编？" class="headerlink" title="Kotlin为什么能和Java混编？"></a>Kotlin为什么能和Java混编？</h3>
+        
+      </div>
+      
+      
+      
+    </div>
+    
+    
+    
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="王文辉">
+            
+              <p class="site-author-name" itemprop="name">王文辉</p>
+              <p class="site-description motion-element" itemprop="description">精中教育，Android高级工程师。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:wwh.person@gmail.com" target="_blank" title="邮箱">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>邮箱</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/a3f894465e71" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/WorkWwh" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/WwhOS" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#网络基础"><span class="nav-number">1.</span> <span class="nav-text">网络基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Https原理"><span class="nav-number">1.1.</span> <span class="nav-text">Https原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Http与Https的区别？"><span class="nav-number">1.2.</span> <span class="nav-text">Http与Https的区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP和UDP的区别？"><span class="nav-number">1.3.</span> <span class="nav-text">TCP和UDP的区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Http的报文结构？cookie的用处？"><span class="nav-number">1.4.</span> <span class="nav-text">Http的报文结构？cookie的用处？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Http有哪些响应码，都代表什么意思？"><span class="nav-number">1.5.</span> <span class="nav-text">Http有哪些响应码，都代表什么意思？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程"><span class="nav-number">2.</span> <span class="nav-text">多线程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Sleep和wait的区别？"><span class="nav-number">2.1.</span> <span class="nav-text">Sleep和wait的区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java有哪些线程池，区别是什么？"><span class="nav-number">2.2.</span> <span class="nav-text">Java有哪些线程池，区别是什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#线程池的工作流程和实现原理"><span class="nav-number">2.3.</span> <span class="nav-text">线程池的工作流程和实现原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cache线程池的缺点？"><span class="nav-number">2.4.</span> <span class="nav-text">Cache线程池的缺点？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多线程的通信方式"><span class="nav-number">2.5.</span> <span class="nav-text">多线程的通信方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#synchronize关键字的用法，其他的同步方式？"><span class="nav-number">2.6.</span> <span class="nav-text">synchronize关键字的用法，其他的同步方式？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Thread直接调用run方法会怎么样？Start方法作用是什么？"><span class="nav-number">2.7.</span> <span class="nav-text">Thread直接调用run方法会怎么样？Start方法作用是什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#volatile关键字的作用是什么？"><span class="nav-number">2.8.</span> <span class="nav-text">volatile关键字的作用是什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#怎么安全停止一个线程任务？原理是什么？线程池有类似的机制吗？"><span class="nav-number">2.9.</span> <span class="nav-text">怎么安全停止一个线程任务？原理是什么？线程池有类似的机制吗？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据结构"><span class="nav-number">3.</span> <span class="nav-text">数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap和HashTable的区别？"><span class="nav-number">3.1.</span> <span class="nav-text">HashMap和HashTable的区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap和ConcurrentHashMap的区别？"><span class="nav-number">3.2.</span> <span class="nav-text">HashMap和ConcurrentHashMap的区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap和LinkedHashMap的区别？"><span class="nav-number">3.3.</span> <span class="nav-text">HashMap和LinkedHashMap的区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap的内部实现原理"><span class="nav-number">3.4.</span> <span class="nav-text">HashMap的内部实现原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LRUCache的原理"><span class="nav-number">3.5.</span> <span class="nav-text">LRUCache的原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ArrayList和LinkedList的区别？为什么ArrayList不是线程安全的？"><span class="nav-number">3.6.</span> <span class="nav-text">ArrayList和LinkedList的区别？为什么ArrayList不是线程安全的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库的索引用是什么数据结构？"><span class="nav-number">3.7.</span> <span class="nav-text">数据库的索引用是什么数据结构？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#虚拟机"><span class="nav-number">4.</span> <span class="nav-text">虚拟机</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Java垃圾回收机制？有哪些对象可以作为GC-roots？"><span class="nav-number">4.1.</span> <span class="nav-text">Java垃圾回收机制？有哪些对象可以作为GC roots？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跟Art，Dalvik对比"><span class="nav-number">4.2.</span> <span class="nav-text">跟Art，Dalvik对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java内存模型"><span class="nav-number">4.3.</span> <span class="nav-text">Java内存模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类加载机制？双亲委托模型？"><span class="nav-number">4.4.</span> <span class="nav-text">类加载机制？双亲委托模型？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Android题"><span class="nav-number">5.</span> <span class="nav-text">Android题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#项目中遇到的难题或者坑"><span class="nav-number">5.1.</span> <span class="nav-text">项目中遇到的难题或者坑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#做过那些性能优化？怎么评测和具体实现的"><span class="nav-number">5.2.</span> <span class="nav-text">做过那些性能优化？怎么评测和具体实现的</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Activity的冷启动流程？AMS的作用？"><span class="nav-number">5.3.</span> <span class="nav-text">Activity的冷启动流程？AMS的作用？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#怎么分析内存泄露？"><span class="nav-number">5.4.</span> <span class="nav-text">怎么分析内存泄露？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#View的事件分发机制？滑动冲突如何解决？"><span class="nav-number">5.5.</span> <span class="nav-text">View的事件分发机制？滑动冲突如何解决？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义View的原理和流程"><span class="nav-number">5.6.</span> <span class="nav-text">自定义View的原理和流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Handler原理"><span class="nav-number">5.7.</span> <span class="nav-text">Handler原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Android有哪些多线程通信方式？Binder机制实现？"><span class="nav-number">5.8.</span> <span class="nav-text">Android有哪些多线程通信方式？Binder机制实现？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Android的生命周期，启动模式"><span class="nav-number">5.9.</span> <span class="nav-text">Android的生命周期，启动模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#项目中使用的开源库？实现原理？"><span class="nav-number">5.10.</span> <span class="nav-text">项目中使用的开源库？实现原理？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Android的打包流程？apk中有哪些东西？签名算法的原理？"><span class="nav-number">5.11.</span> <span class="nav-text">Android的打包流程？apk中有哪些东西？签名算法的原理？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#了解哪些插件话技术"><span class="nav-number">5.12.</span> <span class="nav-text">了解哪些插件话技术</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LinearLayout的布局流程"><span class="nav-number">5.13.</span> <span class="nav-text">LinearLayout的布局流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MVP，MVVM"><span class="nav-number">5.14.</span> <span class="nav-text">MVP，MVVM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Android怎么做保活？"><span class="nav-number">5.15.</span> <span class="nav-text">Android怎么做保活？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#算法"><span class="nav-number">6.</span> <span class="nav-text">算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他"><span class="nav-number">7.</span> <span class="nav-text">其他</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#用过那些设计模式？"><span class="nav-number">7.1.</span> <span class="nav-text">用过那些设计模式？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DCL单例模式为什么要两次判空？"><span class="nav-number">7.2.</span> <span class="nav-text">DCL单例模式为什么要两次判空？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Android源码中或用过的开源库用到了什么设计模式？"><span class="nav-number">7.3.</span> <span class="nav-text">Android源码中或用过的开源库用到了什么设计模式？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#final关键字的作用？"><span class="nav-number">7.4.</span> <span class="nav-text">final关键字的作用？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#静态内部类和内部类的区别？"><span class="nav-number">7.5.</span> <span class="nav-text">静态内部类和内部类的区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#值传递类问题"><span class="nav-number">7.6.</span> <span class="nav-text">值传递类问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kotlin为什么能和Java混编？"><span class="nav-number">7.7.</span> <span class="nav-text">Kotlin为什么能和Java混编？</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王文辉</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('-1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "default";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "default";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "middleRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

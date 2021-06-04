@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/favicon/apple-icon-180x180.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/favicon/logo.svg?v=5.1.4" color="#222">
+
+
+  <link rel="manifest" href="/images/favicon/manifest.json">
+
+
+  <meta name="msapplication-config" content="/images/favicon/browserconfig.xml">
+
+
+
+  <meta name="keywords" content="知识点,编程,run,with,let,also,apply,takeIf,takeUnless,repeat,">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="前言最近使用kotlin语言开发了新的项目，kotlin的一些特性和大量的语法糖相当好用，相比于java，开发效率高了不少。但Kotlin大量的语法糖也带来了一些问题：学习成本高，语法糖使用场景的困惑。比如，当我第一次看到作用域函数就产生了这样的疑问：what is this？Which function to use? 于是我研究了一下什么是作用域函数，以及各个函数的区别和使用场景。">
+<meta name="keywords" content="知识点,编程,run,with,let,also,apply,takeIf,takeUnless,repeat">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kotlin：作用域函数">
+<meta property="og:url" content="https://wangwenhui.site/blog/Kotlin：作用域函数/index.html">
+<meta property="og:site_name" content="王文辉">
+<meta property="og:description" content="前言最近使用kotlin语言开发了新的项目，kotlin的一些特性和大量的语法糖相当好用，相比于java，开发效率高了不少。但Kotlin大量的语法糖也带来了一些问题：学习成本高，语法糖使用场景的困惑。比如，当我第一次看到作用域函数就产生了这样的疑问：what is this？Which function to use? 于是我研究了一下什么是作用域函数，以及各个函数的区别和使用场景。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/9476273-23ffd98940c31a75.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2021-06-04T03:00:07.692Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kotlin：作用域函数">
+<meta name="twitter:description" content="前言最近使用kotlin语言开发了新的项目，kotlin的一些特性和大量的语法糖相当好用，相比于java，开发效率高了不少。但Kotlin大量的语法糖也带来了一些问题：学习成本高，语法糖使用场景的困惑。比如，当我第一次看到作用域函数就产生了这样的疑问：what is this？Which function to use? 于是我研究了一下什么是作用域函数，以及各个函数的区别和使用场景。">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/9476273-23ffd98940c31a75.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://wangwenhui.site/blog/Kotlin：作用域函数/">
+
+
+
+
+
+  <title>Kotlin：作用域函数 | 王文辉</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">王文辉</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">行动是治愈恐惧的良药，而犹豫、拖延将不断滋养恐惧。</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-friends">
+          <a href="/friends/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            友链
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://wangwenhui.site/blog/Kotlin：作用域函数/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="王文辉">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="王文辉">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kotlin：作用域函数</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-03-11T18:54:52+08:00">
+                2019-03-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/资料/" itemprop="url" rel="index">
+                    <span itemprop="name">资料</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/资料/Kotlin/" itemprop="url" rel="index">
+                    <span itemprop="name">Kotlin</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="https://upload-images.jianshu.io/upload_images/9476273-23ffd98940c31a75.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt="Kotlin LOGO"></p>
+<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近使用kotlin语言开发了新的项目，kotlin的一些特性和大量的语法糖相当好用，相比于java，开发效率高了不少。但Kotlin大量的语法糖也带来了一些问题：学习成本高，语法糖使用场景的困惑。<br>比如，当我第一次看到作用域函数就产生了这样的疑问：what is this？Which function to use?</p>
+<p>于是我研究了一下什么是作用域函数，以及各个函数的区别和使用场景。</p>
+<a id="more"></a>
+<h1 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h1><p><strong>官方介绍</strong>：The Kotlin standard library contains several functions whose sole purpose is to execute a block of code within the context of an object. When you call such a function on an object with a lambda expression provided, it forms a temporary scope. In this scope, you can access the object without its name. Such functions are called scope functions. There are five of them: let, run, with, apply, and also.</p>
+<p><strong>翻译理解</strong>：作用域函数的目的是在对象的上下文中执行代码块，它为调用者对象提供了一个临时内部作用域，在这个作用域中可以不显式的访问该对象。这样的作用域函数有5个：let，run，with，apply，和also。</p>
+<h1 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h1><h2 id="run"><a href="#run" class="headerlink" title="run"></a>run</h2><p>run函数是最能体现作用域的用途的函数，如下使用示例：<br>在mian函数中使用run函数创建了一个单独的作用域，在该作用域中重新定义了一个word变量，两次打印使用的是各自作用域中的word变量，互不影响；并且，run函数返回了lambda结果。</p>
+<h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> word = <span class="string">"我是小明"</span></span><br><span class="line">    <span class="keyword">val</span> returnValue = run &#123;</span><br><span class="line">        <span class="keyword">var</span> word = <span class="string">"我是小红"</span></span><br><span class="line">        println(<span class="string">"run:<span class="variable">$word</span>"</span>)</span><br><span class="line">        word</span><br><span class="line">    &#125;</span><br><span class="line">    println(<span class="string">"main:<span class="variable">$word</span>"</span>)</span><br><span class="line">    println(<span class="string">"returnValue:<span class="variable">$returnValue</span>"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">run:我是小红</span><br><span class="line">main:我是小明</span><br><span class="line">returnValue:我是小红</span><br></pre></td></tr></table></figure>
+<h2 id="with"><a href="#with" class="headerlink" title="with"></a>with</h2><p>with函数可以将任意对象作为上下文对象this传入，并且可以隐式的访问该对象，返回lambda结果。如下使用示例：在mian函数中使用with函数创建了一个临时作用域，在该作用域中可以重新定义person变量，两个person变量互无影响；并且可以使用this访问上下文对象，隐式修改person的age变量值。</p>
+<h3 id="使用示例-1"><a href="#使用示例-1" class="headerlink" title="使用示例"></a>使用示例</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>(</span><br><span class="line">    <span class="keyword">var</span> name: String,</span><br><span class="line">    <span class="keyword">var</span> age: <span class="built_in">Int</span> = <span class="number">0</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> person = Person(<span class="string">"小明"</span>,<span class="number">25</span>)</span><br><span class="line">    <span class="keyword">val</span> returnValue = with(person) &#123;</span><br><span class="line">        println(<span class="string">"with:this=<span class="variable">$this</span>"</span>)</span><br><span class="line">        <span class="keyword">var</span> person = Person(<span class="string">"小红"</span>,<span class="number">23</span>)</span><br><span class="line">        println(<span class="string">"with:person=<span class="variable">$person</span>"</span>)</span><br><span class="line">        age = <span class="number">26</span></span><br><span class="line">        person</span><br><span class="line">    &#125;</span><br><span class="line">    println(<span class="string">"main:person=<span class="variable">$person</span>"</span>)</span><br><span class="line">    println(<span class="string">"main:returnValue=<span class="variable">$returnValue</span>"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">with:<span class="keyword">this</span>=Person(name=小明, age=<span class="number">25</span>)</span><br><span class="line">with:person=Person(name=小红, age=<span class="number">23</span>)</span><br><span class="line">main:person=Person(name=小明, age=<span class="number">26</span>)</span><br><span class="line">main:returnValue=Person(name=小红, age=<span class="number">23</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="T-run"><a href="#T-run" class="headerlink" title="T.run"></a>T.run</h2><p>T.run函数可以使用T作为作用域的上下文对象this，在作用域中可以隐式访问T对象，并返回lambda结果。</p>
+<h3 id="使用示例-2"><a href="#使用示例-2" class="headerlink" title="使用示例"></a>使用示例</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>(</span><br><span class="line">    <span class="keyword">var</span> name: String,</span><br><span class="line">    <span class="keyword">var</span> age: <span class="built_in">Int</span> = <span class="number">0</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> person: Person? = <span class="literal">null</span></span><br><span class="line">    <span class="comment">// T?.run当T为null时不调用run函数</span></span><br><span class="line">    person?.run &#123;</span><br><span class="line">        println(<span class="string">"person?.run:person=<span class="variable">$person</span>"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    person = Person(<span class="string">"小明"</span>,<span class="number">25</span>)</span><br><span class="line">    <span class="keyword">val</span> returnValue = person.run &#123;</span><br><span class="line">        println(<span class="string">"person.run:this=<span class="variable">$this</span>"</span>)</span><br><span class="line">        <span class="keyword">var</span> person = Person(<span class="string">"小红"</span>,<span class="number">23</span>)</span><br><span class="line">        println(<span class="string">"person.run:person=<span class="variable">$person</span>"</span>)</span><br><span class="line">        age = <span class="number">26</span></span><br><span class="line">        person</span><br><span class="line">    &#125;</span><br><span class="line">    println(<span class="string">"main:person=<span class="variable">$person</span>"</span>)</span><br><span class="line">    println(<span class="string">"main:returnValue=<span class="variable">$returnValue</span>"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">person.run:<span class="keyword">this</span>=Person(name=小明, age=<span class="number">25</span>)</span><br><span class="line">person.run:person=Person(name=小红, age=<span class="number">23</span>)</span><br><span class="line">main:person=Person(name=小明, age=<span class="number">26</span>)</span><br><span class="line">main:returnValue=Person(name=小红, age=<span class="number">23</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="T-let"><a href="#T-let" class="headerlink" title="T.let"></a>T.let</h2><p>T.let函数与T.run函数唯一的区别是：T作为作用域上下文对象的名称不同，前者是it，后者是this，所以在T.let函数中必须显式使用it访问T对象。</p>
+<h3 id="使用示例-3"><a href="#使用示例-3" class="headerlink" title="使用示例"></a>使用示例</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>(</span><br><span class="line">    <span class="keyword">var</span> name: String,</span><br><span class="line">    <span class="keyword">var</span> age: <span class="built_in">Int</span> = <span class="number">0</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> person: Person? = <span class="literal">null</span></span><br><span class="line">    person?.let &#123;</span><br><span class="line">        println(<span class="string">"person?.let:person=<span class="variable">$person</span>"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    person = Person(<span class="string">"小明"</span>,<span class="number">25</span>)</span><br><span class="line">    <span class="keyword">val</span> returnValue = person.let &#123;</span><br><span class="line">        println(<span class="string">"person.let:it=<span class="variable">$it</span>"</span>)</span><br><span class="line">        <span class="keyword">var</span> person = Person(<span class="string">"小红"</span>,<span class="number">23</span>)</span><br><span class="line">        println(<span class="string">"person.let:person=<span class="variable">$person</span>"</span>)</span><br><span class="line">        it.age = <span class="number">26</span></span><br><span class="line">        person</span><br><span class="line">    &#125;</span><br><span class="line">    println(<span class="string">"main:person=<span class="variable">$person</span>"</span>)</span><br><span class="line">    println(<span class="string">"main:returnValue=<span class="variable">$returnValue</span>"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">person.let:it=Person(name=小明, age=<span class="number">25</span>)</span><br><span class="line">person.let:person=Person(name=小红, age=<span class="number">23</span>)</span><br><span class="line">main:person=Person(name=小明, age=<span class="number">26</span>)</span><br><span class="line">main:returnValue=Person(name=小红, age=<span class="number">23</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="T-also"><a href="#T-also" class="headerlink" title="T.also"></a>T.also</h2><p>如下使用示例，T.also函数和T.let函数的唯一区别是：前者返回值是this（即T），后者返回值是lambda结果。</p>
+<h3 id="使用示例-4"><a href="#使用示例-4" class="headerlink" title="使用示例"></a>使用示例</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>(</span><br><span class="line">    <span class="keyword">var</span> name: String,</span><br><span class="line">    <span class="keyword">var</span> age: <span class="built_in">Int</span> = <span class="number">0</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> person: Person? = <span class="literal">null</span></span><br><span class="line">    person?.also &#123;</span><br><span class="line">        println(<span class="string">"person?.also:person=<span class="variable">$person</span>"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    person = Person(<span class="string">"小明"</span>,<span class="number">25</span>)</span><br><span class="line">    <span class="keyword">val</span> returnValue = person.also &#123;</span><br><span class="line">        println(<span class="string">"person.also:it=<span class="variable">$it</span>"</span>)</span><br><span class="line">        <span class="keyword">var</span> person = Person(<span class="string">"小红"</span>,<span class="number">23</span>)</span><br><span class="line">        println(<span class="string">"person.also:person=<span class="variable">$person</span>"</span>)</span><br><span class="line">        it.age = <span class="number">26</span></span><br><span class="line">        person</span><br><span class="line">    &#125;</span><br><span class="line">    println(<span class="string">"main:person=<span class="variable">$person</span>"</span>)</span><br><span class="line">    println(<span class="string">"main:returnValue=<span class="variable">$returnValue</span>"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">person.also:it=Person(name=小明, age=<span class="number">25</span>)</span><br><span class="line">person.also:person=Person(name=小红, age=<span class="number">23</span>)</span><br><span class="line">main:person=Person(name=小明, age=<span class="number">26</span>)</span><br><span class="line">main:returnValue=Person(name=小明, age=<span class="number">26</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="T-apply"><a href="#T-apply" class="headerlink" title="T.apply"></a>T.apply</h2><p>如下使用示例，T.apply函数和T.also函数的唯一的区别是：T作为作用域上下文对象的名称不同，前者是this，后者是it，所以在T.apply函数中可以隐式访问T对象。</p>
+<h3 id="使用示例-5"><a href="#使用示例-5" class="headerlink" title="使用示例"></a>使用示例</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>(</span><br><span class="line">    <span class="keyword">var</span> name: String,</span><br><span class="line">    <span class="keyword">var</span> age: <span class="built_in">Int</span> = <span class="number">0</span></span><br><span class="line">)</span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> person: Person? = <span class="literal">null</span></span><br><span class="line">    person?.apply &#123;</span><br><span class="line">        println(<span class="string">"person?.apply:person=<span class="variable">$person</span>"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    person = Person(<span class="string">"小明"</span>,<span class="number">25</span>)</span><br><span class="line">    <span class="keyword">val</span> returnValue = person.apply &#123;</span><br><span class="line">        println(<span class="string">"person.apply:this=<span class="variable">$this</span>"</span>)</span><br><span class="line">        <span class="keyword">var</span> person = Person(<span class="string">"小红"</span>,<span class="number">23</span>)</span><br><span class="line">        println(<span class="string">"person.apply:person=<span class="variable">$person</span>"</span>)</span><br><span class="line">        age = <span class="number">26</span></span><br><span class="line">        person</span><br><span class="line">    &#125;</span><br><span class="line">    println(<span class="string">"main:person=<span class="variable">$person</span>"</span>)</span><br><span class="line">    println(<span class="string">"main:returnValue=<span class="variable">$returnValue</span>"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">person.apply:<span class="keyword">this</span>=Person(name=小明, age=<span class="number">25</span>)</span><br><span class="line">person.apply:person=Person(name=小红, age=<span class="number">23</span>)</span><br><span class="line">main:person=Person(name=小明, age=<span class="number">26</span>)</span><br><span class="line">main:returnValue=Person(name=小明, age=<span class="number">26</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="特殊的作用域函数"><a href="#特殊的作用域函数" class="headerlink" title="特殊的作用域函数"></a>特殊的作用域函数</h2><h3 id="T-takeIf"><a href="#T-takeIf" class="headerlink" title="T.takeIf"></a>T.takeIf</h3><p>以it作为在作用域上下文对象T的名称，若lambda结果为true，返回this；否则，返回null。</p>
+<h3 id="函数源码"><a href="#函数源码" class="headerlink" title="函数源码"></a>函数源码</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@kotlin</span>.<span class="keyword">internal</span>.InlineOnly</span><br><span class="line"><span class="meta">@SinceKotlin(<span class="meta-string">"1.1"</span>)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> T.<span class="title">takeIf</span><span class="params">(predicate: (<span class="type">T</span>)</span></span> -&gt; <span class="built_in">Boolean</span>): T? &#123;</span><br><span class="line">    contract &#123;</span><br><span class="line">        callsInPlace(predicate, InvocationKind.EXACTLY_ONCE)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">if</span> (predicate(<span class="keyword">this</span>)) <span class="keyword">this</span> <span class="keyword">else</span> <span class="literal">null</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="使用示例-6"><a href="#使用示例-6" class="headerlink" title="使用示例"></a>使用示例</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> count = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> (count &lt;= <span class="number">10</span>) &#123;</span><br><span class="line">        <span class="keyword">val</span> returnValue = count.takeIf &#123;</span><br><span class="line">            count++ % <span class="number">2</span> == <span class="number">0</span></span><br><span class="line">        &#125;</span><br><span class="line">        println(returnValue)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span></span><br><span class="line"><span class="literal">null</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="literal">null</span></span><br><span class="line"><span class="number">4</span></span><br><span class="line"><span class="literal">null</span></span><br><span class="line"><span class="number">6</span></span><br><span class="line"><span class="literal">null</span></span><br><span class="line"><span class="number">8</span></span><br><span class="line"><span class="literal">null</span></span><br><span class="line"><span class="number">10</span></span><br></pre></td></tr></table></figure>
+<h3 id="T-takeUnless"><a href="#T-takeUnless" class="headerlink" title="T.takeUnless"></a>T.takeUnless</h3><p>以it作为在作用域上下文对象T的名称，若lambda结果为true，返回null；否则，返回this。与taskIf的实现相比，其实就是对lambda结果进行了取反操作。</p>
+<h3 id="函数源码-1"><a href="#函数源码-1" class="headerlink" title="函数源码"></a>函数源码</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@kotlin</span>.<span class="keyword">internal</span>.InlineOnly</span><br><span class="line"><span class="meta">@SinceKotlin(<span class="meta-string">"1.1"</span>)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> T.<span class="title">takeUnless</span><span class="params">(predicate: (<span class="type">T</span>)</span></span> -&gt; <span class="built_in">Boolean</span>): T? &#123;</span><br><span class="line">    contract &#123;</span><br><span class="line">        callsInPlace(predicate, InvocationKind.EXACTLY_ONCE)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">if</span> (!predicate(<span class="keyword">this</span>)) <span class="keyword">this</span> <span class="keyword">else</span> <span class="literal">null</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="使用示例-7"><a href="#使用示例-7" class="headerlink" title="使用示例"></a>使用示例</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> count = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> (count &lt;= <span class="number">10</span>) &#123;</span><br><span class="line">        <span class="keyword">val</span> returnValue = count.takeUnless &#123;</span><br><span class="line">            count++ % <span class="number">2</span> == <span class="number">0</span></span><br><span class="line">        &#125;</span><br><span class="line">        println(returnValue)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="literal">null</span></span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="literal">null</span></span><br><span class="line"><span class="number">3</span></span><br><span class="line"><span class="literal">null</span></span><br><span class="line"><span class="number">5</span></span><br><span class="line"><span class="literal">null</span></span><br><span class="line"><span class="number">7</span></span><br><span class="line"><span class="literal">null</span></span><br><span class="line"><span class="number">9</span></span><br><span class="line"><span class="literal">null</span></span><br></pre></td></tr></table></figure>
+<h3 id="repeat"><a href="#repeat" class="headerlink" title="repeat"></a>repeat</h3><p>以当前执行的次数it作为在作用域上下文对象T的名称，执行给定lambda函数指定的次数。从函数源码和使用示例可以看出，执行次数角标是从0开始。</p>
+<h3 id="函数源码-2"><a href="#函数源码-2" class="headerlink" title="函数源码"></a>函数源码</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@kotlin</span>.<span class="keyword">internal</span>.InlineOnly</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> <span class="title">repeat</span><span class="params">(times: <span class="type">Int</span>, action: (<span class="type">Int</span>)</span></span> -&gt; <span class="built_in">Unit</span>) &#123;</span><br><span class="line">    contract &#123; callsInPlace(action) &#125;</span><br><span class="line">    <span class="keyword">for</span> (index <span class="keyword">in</span> <span class="number">0</span> until times) &#123;</span><br><span class="line">        action(index)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="使用示例-8"><a href="#使用示例-8" class="headerlink" title="使用示例"></a>使用示例</h3><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    repeat(<span class="number">5</span>) &#123;</span><br><span class="line">        print(<span class="string">"<span class="variable">$it</span>,"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>运行结果：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,</span><br></pre></td></tr></table></figure>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>从上面的函数介绍和实际使用可以看出let，run，with，apply，和also，这些作用域函数的功能之间起着相互补充的作用，单独看某两个函数可能差别不大，但它们结合起来所实现的功能涵盖了绝大部分的使用场景。</p>
+<p>总结一下，用于快速判断操作符使用场景，主要使用这几个因素辨别：</p>
+<ol>
+<li><p><strong>调用者</strong>：</p>
+<ul>
+<li>正常函数：有run，with函数。主要作用是：开辟一个作用域，不受作用域之外上下文影响，with还可以方便地在作用域中访问上下文对象。</li>
+<li>扩展函数：可以使用T?.fun()在调用之前做空检查，如：<code>null?.run { println(&quot;Kotlin&quot;) }</code>，作用域内容不会被执行。</li>
+</ul>
+</li>
+<li><p><strong>上下文对象</strong></p>
+<ul>
+<li>this：方便在作用域中直接访问this</li>
+<li>it：可以更清楚的区分作用域和非作用域中的成员</li>
+</ul>
+</li>
+<li><p><strong>返回值</strong></p>
+<ul>
+<li>上下文对象this：可以作为链式调用。</li>
+<li><p>lambda表达式结果：返回表达式结果，可以将结果结合其他作用域函数，使用更灵活。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 示例：使用apply函数进行链式调用</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> name = <span class="string">""</span></span><br><span class="line">    <span class="keyword">var</span> age = <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">(args: <span class="type">Array</span>&lt;<span class="type">String</span>&gt;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> person = Person().apply &#123; name = <span class="string">"小明"</span> &#125;.apply &#123; age = <span class="number">25</span> &#125;</span><br><span class="line">    println(<span class="string">"<span class="subst">$&#123;person.name&#125;</span>,<span class="subst">$&#123;person.age&#125;</span>"</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 运行结果：小明,25</span></span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+</li>
+</ol>
+<p>下面对作用域函数简要区分，可以更方便快速的辨别各函数的作用和使用场景。</p>
+<p>作用域函数简要区分：</p>
+<ul>
+<li><strong>run</strong>：返回lambda结果</li>
+<li><strong>with</strong>：this上下文，返回lambda结果</li>
+<li><strong>T.run</strong>：支持空检查，this上下文，返回lambda结果</li>
+<li><strong>T.let</strong>：支持空检查，it上下文，返回lambda结果</li>
+<li><strong>T.also</strong>：支持空检查，it上下文，返回this（即T，it）</li>
+<li><strong>T.apply</strong>：支持空检查，this上下文，返回this（即T，this）</li>
+</ul>
+<p>特殊的作用域函数区分：</p>
+<ul>
+<li><strong>T.takeIf</strong>：支持空检查，it上下文，函数体返回值类型Boolean，函数体返回true，函数返回this；否则返回null</li>
+<li><strong>T.takeUnless</strong>：支持空检查，it上下文，函数体返回值类型Boolean，函数体返回true，函数返回null；否则返回this</li>
+<li><strong>repeat</strong>：执行给定函数 <em>action</em> 指定的次数 <em>times</em>  （角标：0-times）</li>
+</ul>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><blockquote>
+<p>官方文档：<a href="https://www.kotlincn.net/docs/reference/scope-functions.html" target="_blank" rel="noopener">https://www.kotlincn.net/docs/reference/scope-functions.html</a><br>medium Elye：<a href="https://medium.com/@elye.project/mastering-kotlin-standard-functions-run-with-let-also-and-apply-9cd334b0ef84" target="_blank" rel="noopener">https://medium.com/@elye.project/mastering-kotlin-standard-functions-run-with-let-also-and-apply-9cd334b0ef84</a><br>CSDN george_zyf：<a href="https://blog.csdn.net/android_zyf/article/details/82496983" target="_blank" rel="noopener">https://blog.csdn.net/android_zyf/article/details/82496983</a></p>
+</blockquote>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/知识点/" rel="tag"># 知识点</a>
+          
+            <a href="/tags/编程/" rel="tag"># 编程</a>
+          
+            <a href="/tags/run/" rel="tag"># run</a>
+          
+            <a href="/tags/with/" rel="tag"># with</a>
+          
+            <a href="/tags/let/" rel="tag"># let</a>
+          
+            <a href="/tags/also/" rel="tag"># also</a>
+          
+            <a href="/tags/apply/" rel="tag"># apply</a>
+          
+            <a href="/tags/takeIf/" rel="tag"># takeIf</a>
+          
+            <a href="/tags/takeUnless/" rel="tag"># takeUnless</a>
+          
+            <a href="/tags/repeat/" rel="tag"># repeat</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+
+        
+
+        
+          
+          <div id="needsharebutton-postbottom">
+            <span class="btn">
+              <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </span>
+          </div>
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/macOS系统安装必备软件和搭建开发环境/" rel="next" title="macOS系统安装必备软件和搭建开发环境">
+                <i class="fa fa-chevron-left"></i> macOS系统安装必备软件和搭建开发环境
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/Https协议详解/" rel="prev" title="Https协议详解">
+                Https协议详解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="王文辉">
+            
+              <p class="site-author-name" itemprop="name">王文辉</p>
+              <p class="site-description motion-element" itemprop="description">精中教育，Android高级工程师。</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:wwh.person@gmail.com" target="_blank" title="邮箱">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>邮箱</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/a3f894465e71" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/WorkWwh" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/WwhOS" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#介绍"><span class="nav-number">2.</span> <span class="nav-text">介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#函数"><span class="nav-number">3.</span> <span class="nav-text">函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#run"><span class="nav-number">3.1.</span> <span class="nav-text">run</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用示例"><span class="nav-number">3.1.1.</span> <span class="nav-text">使用示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#with"><span class="nav-number">3.2.</span> <span class="nav-text">with</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用示例-1"><span class="nav-number">3.2.1.</span> <span class="nav-text">使用示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#T-run"><span class="nav-number">3.3.</span> <span class="nav-text">T.run</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用示例-2"><span class="nav-number">3.3.1.</span> <span class="nav-text">使用示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#T-let"><span class="nav-number">3.4.</span> <span class="nav-text">T.let</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用示例-3"><span class="nav-number">3.4.1.</span> <span class="nav-text">使用示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#T-also"><span class="nav-number">3.5.</span> <span class="nav-text">T.also</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用示例-4"><span class="nav-number">3.5.1.</span> <span class="nav-text">使用示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#T-apply"><span class="nav-number">3.6.</span> <span class="nav-text">T.apply</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用示例-5"><span class="nav-number">3.6.1.</span> <span class="nav-text">使用示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#特殊的作用域函数"><span class="nav-number">3.7.</span> <span class="nav-text">特殊的作用域函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#T-takeIf"><span class="nav-number">3.7.1.</span> <span class="nav-text">T.takeIf</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数源码"><span class="nav-number">3.7.2.</span> <span class="nav-text">函数源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用示例-6"><span class="nav-number">3.7.3.</span> <span class="nav-text">使用示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#T-takeUnless"><span class="nav-number">3.7.4.</span> <span class="nav-text">T.takeUnless</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数源码-1"><span class="nav-number">3.7.5.</span> <span class="nav-text">函数源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用示例-7"><span class="nav-number">3.7.6.</span> <span class="nav-text">使用示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#repeat"><span class="nav-number">3.7.7.</span> <span class="nav-text">repeat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数源码-2"><span class="nav-number">3.7.8.</span> <span class="nav-text">函数源码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用示例-8"><span class="nav-number">3.7.9.</span> <span class="nav-text">使用示例</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">王文辉</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+      <div id="needsharebutton-float">
+        <span class="btn">
+          <i class="fa fa-share-alt" aria-hidden="true"></i>
+        </span>
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('-1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/needsharebutton/needsharebutton.css">
+
+  
+  
+  <script src="/lib/needsharebutton/needsharebutton.js"></script>
+
+  <script>
+    
+      pbOptions = {};
+      
+          pbOptions.iconStyle = "default";
+      
+          pbOptions.boxForm = "horizontal";
+      
+          pbOptions.position = "bottomCenter";
+      
+          pbOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-postbottom', pbOptions);
+    
+    
+      flOptions = {};
+      
+          flOptions.iconStyle = "default";
+      
+          flOptions.boxForm = "horizontal";
+      
+          flOptions.position = "middleRight";
+      
+          flOptions.networks = "Weibo,Wechat,Douban,QQZone,Twitter,Facebook";
+      
+      new needShareButton('#needsharebutton-float', flOptions);
+    
+  </script>
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
